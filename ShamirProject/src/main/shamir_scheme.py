@@ -23,7 +23,7 @@ def encrypt(text: str, password: str, n : int, t: int) -> bytes:
     pass  # Implementation of the function here
 
 
-def get_password() -> str:
+def _get_password() -> str:
     """
     Prompts the user to enter a password.
 
@@ -58,7 +58,7 @@ def decrypt(encrypted_content: bytes, password: str) -> str:
     pass  # Implementation of the function here
 
 
-def reconstruct_secret(evaluations: list[tuple[int, int]]) -> int:
+def _reconstruct_secret(evaluations: list[tuple[int, int]]) -> int:
     """
     Reconstructs the secret from the polynomial evaluations.
 
