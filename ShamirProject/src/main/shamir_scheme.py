@@ -1,4 +1,4 @@
-def encrypt(text: str, password: str, n : int, t: int) -> bytes:
+def encrypt(text: str, password: str, n : int, t: int) -> tuple[bytes, dict[int, int]]:
     """
     Encrypts the plaintext using the provided password.
 
@@ -9,7 +9,9 @@ def encrypt(text: str, password: str, n : int, t: int) -> bytes:
         t(int): The number of threads to use.
 
     Raises:
-        encrypted_content(bytes): The encrypted content as a byte sequence.
+        tuple:
+            -encrypted_content(bytes): The encrypted content as a byte sequence.
+            -dict[int, int] : The totality of points evaluated (n).
     """
     pass  
 
@@ -27,18 +29,18 @@ def _get_password() -> str:
     pass  
 
 
-def decrypt(encrypted_content: bytes, password: str) -> str:
+def decrypt(encrypted_content: bytes, evaluations: dict[int, int]) -> str:
     """
     Decrypts the encrypted content using the provided password.
 
     Args:
         encrypted_content(bytes): The encrypted content to be decrypted.
-        password(str): The password used to decrypt the content.
+        evaluations(dict[int, int]): Points of the polynomial (x, P(x)).
 
     Raises:
         plaintext(str): The decrypted content as plaintext.
     """
-    pass  # Implementation of the function here
+    pass
 
 
 def _reconstruct_secret(evaluations: list[tuple[int, int]]) -> int:
@@ -54,7 +56,7 @@ def _reconstruct_secret(evaluations: list[tuple[int, int]]) -> int:
     pass  
 
 
-def read_evaluations(evaluations_file_path: str) -> list[tuple[int, int]]:
+def read_evaluations(evaluations_file_path: str) -> dict[int, int]:
     """
     Reads the polynomial evaluations from a file.
 
@@ -62,6 +64,6 @@ def read_evaluations(evaluations_file_path: str) -> list[tuple[int, int]]:
         evaluations_file_path(str): The path to the file containing the evaluations.
 
     Raises:
-        evaluations(list[tuple[int, int]]): A list of tuples where each tuple contains a pair (x, y) representing an evaluation of the polynomial.
+        dict[int, int]: Points of the polynomial (x, P(x)).
     """
     pass  
