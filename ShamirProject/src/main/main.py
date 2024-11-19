@@ -1,6 +1,7 @@
 import getpass
-from encryption import encrypt_file
-from decryption import decrypt_file
+from shamir_scheme import encrypt_file
+from shamir_scheme import decrypt_file
+
 
 def main_menu():
     print("Bienvenido al Sistema de Compartición de Secretos de Shamir")
