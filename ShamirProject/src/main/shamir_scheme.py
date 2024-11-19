@@ -1,5 +1,3 @@
-
-
 def encrypt(text: str, password: str, n : int, t: int) -> bytes:
     """
     Encrypts the plaintext using the provided password.
