@@ -1,4 +1,6 @@
-def encrypt(text: str, password: str) -> bytes:
+
+
+def encrypt(text: str, password: str, n : int, t: int) -> bytes:
     """
     Encrypts the plaintext using the provided password.
 
@@ -8,6 +10,10 @@ def encrypt(text: str, password: str) -> bytes:
         The plaintext to be encrypted.
     password : str
         The password used to encrypt the text.
+    n : int
+        The number of rounds to perform.
+    t : int
+        The number of threads to use.
 
     Returns:
     --------
