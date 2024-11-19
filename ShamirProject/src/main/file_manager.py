@@ -12,9 +12,9 @@ def _validate_file(file_path):
         PermissionError: If the file is not readable.
     """
     if not os.path.isfile(file_path):
-        raise FileNotFoundError(f"The file {file_path} does not exist.")
+        raise FileNotFoundError(f"El archivo {file_path} no existe.")
     if not os.access(file_path, os.R_OK):
-        raise PermissionError(f"The file {file_path} is not readable.")
+        raise PermissionError(f"El archivo {file_path} no se puede leer.")
 
 def _validate_directory(file_path):
     """
@@ -29,9 +29,9 @@ def _validate_directory(file_path):
     """
     directory = os.path.dirname(file_path)
     if not os.path.isdir(directory):
-        raise FileNotFoundError(f"The directory {directory} does not exist.")
+        raise FileNotFoundError(f"El directorio {directory} no existe.")
     if not os.access(directory, os.W_OK):
-        raise PermissionError(f"The directory {directory} is not writable.")
+        raise PermissionError(f"En el directorio {directory} no se puede escribir.")
 
 def read_binary_file(file_path):
     """
@@ -46,18 +46,11 @@ def read_binary_file(file_path):
     Raises:
         FileNotFoundError: If the file does not exist.
         PermissionError: If the file is not readable.
-        IOError: If an error occurs while reading the file.
     """
     _validate_file(file_path)
-    try:
-        with open(file_path, 'rb') as file:
-            return file.read()
-    except FileNotFoundError:
-        raise
-    except PermissionError:
-        raise
-    except Exception as e:
-        raise IOError(f"An error occurred while reading the file {file_path}: {e}")
+    with open(file_path, 'rb') as file:
+        return file.read()
+
 
 def write_binary_file(file_path, data):
     """
@@ -70,18 +63,10 @@ def write_binary_file(file_path, data):
     Raises:
         FileNotFoundError: If the directory does not exist.
         PermissionError: If the directory is not writable.
-        IOError: If an error occurs while writing to the file.
     """
     _validate_directory(file_path)
-    try:
-        with open(file_path, 'wb') as file:
-            file.write(data)
-    except FileNotFoundError:
-        raise
-    except PermissionError:
-        raise
-    except Exception as e:
-        raise IOError(f"An error occurred while writing to the file {file_path}: {e}")
+    with open(file_path, 'wb') as file:
+        file.write(data)
 
 def read_text_file(file_path):
     """
@@ -96,18 +81,10 @@ def read_text_file(file_path):
     Raises:
         FileNotFoundError: If the file does not exist.
         PermissionError: If the file is not readable.
-        IOError: If an error occurs while reading the file.
     """
     _validate_file(file_path)
-    try:
-        with open(file_path, 'r', encoding='utf-8') as file:
-            return file.read()
-    except FileNotFoundError:
-        raise
-    except PermissionError:
-        raise
-    except Exception as e:
-        raise IOError(f"An error occurred while reading the file {file_path}: {e}")
+    with open(file_path, 'r', encoding='utf-8') as file:
+        return file.read()
 
 def write_text_file(file_path, data):
     """
@@ -120,15 +97,7 @@ def write_text_file(file_path, data):
     Raises:
         FileNotFoundError: If the directory does not exist.
         PermissionError: If the directory is not writable.
-        IOError: If an error occurs while writing to the file.
     """
     _validate_directory(file_path)
-    try:
-        with open(file_path, 'w', encoding='utf-8') as file:
-            file.write(data)
-    except FileNotFoundError:
-        raise
-    except PermissionError:
-        raise
-    except Exception as e:
-        raise IOError(f"An error occurred while writing to the file {file_path}: {e}")
+    with open(file_path, 'w', encoding='utf-8') as file:
+        file.write(data)
