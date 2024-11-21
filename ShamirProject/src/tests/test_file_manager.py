@@ -1,7 +1,8 @@
 import pytest
 import os
-
-from ShamirProject.src.main.file_manager import (
+import sys
+sys.path.append(os.path.abspath("./src/main"))
+from file_manager import (
     _validate_file,
     _validate_directory,
     read_binary_file,
