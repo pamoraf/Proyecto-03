@@ -8,7 +8,7 @@ def encrypt(text: str, password: str, n : int, t: int) -> tuple[bytes, dict[int,
         n(int): The number of rounds to perform.
         t(int): The number of threads to use.
 
-    Raises:
+    Return:
         tuple:
             -encrypted_content(bytes): The encrypted content as a byte sequence.
             -dict[int, int] : The totality of points evaluated (n).
@@ -23,7 +23,7 @@ def _get_password() -> str:
     Args:
         None.
 
-    Raises:
+    Return:
         password(str): The password entered by the user.
     """
     pass  
@@ -37,7 +37,7 @@ def decrypt(encrypted_content: bytes, evaluations: dict[int, int]) -> str:
         encrypted_content(bytes): The encrypted content to be decrypted.
         evaluations(dict[int, int]): Points of the polynomial (x, P(x)).
 
-    Raises:
+    Return:
         plaintext(str): The decrypted content as plaintext.
     """
     pass
@@ -50,7 +50,7 @@ def _reconstruct_secret(evaluations: list[tuple[int, int]]) -> int:
     Args:
         evaluations(list[tuple[int, int]]): A list of tuples where each tuple contains a pair (x, y) representing an evaluation of the polynomial.
 
-    Raises:
+    Return:
         secret(int): The secret reconstructed from the evaluations.
     """
     pass  
@@ -63,7 +63,7 @@ def read_evaluations(evaluations_file_path: str) -> dict[int, int]:
     Args:
         evaluations_file_path(str): The path to the file containing the evaluations.
 
-    Raises:
+    Return:
         dict[int, int]: Points of the polynomial (x, P(x)).
     """
     pass  
