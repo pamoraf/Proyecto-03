@@ -2,7 +2,7 @@ import pytest
 import os
 import sys
 sys.path.append(os.path.abspath("./src/main"))
-from file_manager import (
+from io_manager import (
     read_binary_file,
     write_binary_file,
     read_text_file,
