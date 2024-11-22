@@ -33,7 +33,7 @@ def get_subarrays(array, n):
     if n > len(array):
         return []
     subarrays = []
-    for i in range(len(array) - n):
+    for i in range(len(array) - n + 1):
         subarrays.append(array[i: i + n])
     return subarrays
 
@@ -74,7 +74,7 @@ def test_decrypt(text_samples, password_samples, total_evaluations, minimum_eval
             encrypted_text, evaluations = encrypt(text, password, total_evaluations, minimum_evaluations)
             decrypted_text = decrypt(encrypted_text, evaluations)
             assert decrypted_text == text
-            decrypted_text = decrypt(encrypted_text, evaluations[:minimum_evaluations - 1])
+            decrypted_text = decrypt(encrypted_text, evaluations[:minimum_evaluations])
             assert decrypted_text == text
 
 @pytest.mark.parametrize("total_evaluations, minimum_evaluations", [
