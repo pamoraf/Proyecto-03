@@ -2,7 +2,7 @@ import pytest
 import os
 import sys
 sys.path.append(os.path.abspath("./src/main"))
-from shamir_scheme import _reconstruct_secret, encrypt, decrypt
+from shamir_scheme import reconstruct_secret, generate_shares
 
 EVALUATIONS = [
     (1, 1),
@@ -97,30 +97,6 @@ def test_decrypt_evaluations(text_samples, password_samples, total_evaluations, 
             for minimal_evaluation in get_subarrays(evaluations, minimum_evaluations):
                 decrypted_text = decrypt(encrypted_text, minimal_evaluation)
                 assert decrypted_text == text
-
-
-@pytest.fixture(scope="module")
-def password_samples():
-    passwords = [
-        "1234567890",
-        "JHxj3£3+`0|1",
-        "5MjQ,rc50@\\=",
-        "uTHpayUPlYpI",
-        "FOLUdy LEaLDMArphInAtechruE",
-        "oF031'jlVr<H-:tL]$PN}£%1^f",
-        "2zt}S,=Cv9+-R1[I'euD]£`O$|"
-    ]
-    return passwords
-
-@pytest.fixture(scope="module")
-def text_samples():
-    return [
-        "Hello, World!",
-        "This is a test.",
-        "Shamir's Secret Sharing is interesting.",
-        "Python is great for cryptography.",
-        "Let's test edge cases."
-    ]
 
 def test_encrypt_empty_text(password_samples):
     password = password_samples[0]

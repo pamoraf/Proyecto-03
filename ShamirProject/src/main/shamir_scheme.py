@@ -1,35 +1,27 @@
-import hashlib
 import random
-from sympy import symbols, expand, lambdify
-from polynomial import generate_shares
+from typing import List
+from sympy import symbols
 
-def generate_key(input_string: str) -> bytes:
-    """
-    Generates a SHA-256 key from the input string.
-
-    Args:
-        input_string (str): The input string to generate a key from.
-
-    Returns:
-        bytes: The SHA-256 hash of the input string as a byte sequence.
-    """
-    sha256_hash = hashlib.sha256(input_string.encode()).digest()
-    return sha256_hash
-
-def _reconstruct_secret(evaluations: list[tuple[int, int]]) -> int:
+def reconstruct_secret(evaluations_format : str) -> int:
     """
     Reconstructs the secret from the polynomial evaluations.
 
     Args:
-        evaluations(list[tuple[int, int]]): A list of tuples where each tuple contains a pair (x, y) representing an evaluation of the polynomial.
+        evaluations_format (str): Polynomial evaluations formatted:
+            x, P(x)
+            x_1, P(x_1)
+            .
+            .
+            .
+            x_n, P(x_n)
 
     Return:
         secret(int): The secret reconstructed from the evaluations.
     """
     x = symbols('x')
+    evaluations = _get_evaluations(evaluations_format)
     secret = 0
     k = len(evaluations)
-    
     for j in range(k):
         x_j, y_j = evaluations[j]
         L_j = 1
@@ -38,46 +30,60 @@ def _reconstruct_secret(evaluations: list[tuple[int, int]]) -> int:
                 x_m, _ = evaluations[m]
                 L_j *= (x - x_m) / (x_j - x_m)
         secret += y_j * L_j
-    
     return int(secret.subs(x, 0))
 
-def encrypt(text: str, password: str, n: int, t: int) -> tuple[bytes, dict[int, int]]:
+def generate_shares(secret, n, t):
     """
-    Encrypts the plaintext using the provided password.
+    Generates n shares of the secret using a polynomial of degree k-1.
 
     Args:
-        text(str): The plaintext to be encrypted.
-        password(str): The password used to encrypt the text.
-        n(int): The number of shares to generate.
-        t(int): The minimum number of shares needed to reconstruct the secret.
+        secret (int): The secret to be shared.
+        n (int): The total number of shares to be generated.
+        t (int): The minimum number of shares needed to reconstruct the secret.
 
-    Return:
-        tuple:
-            - encrypted_content(bytes): The encrypted content as a byte sequence.
-            - evaluations(dict[int, int]): The generated shares of the secret.
+    Returns:
+        evaluations_format (str): Polynomial evaluations formatted:
+            x, P(x)
+            x_1, P(x_1)
+            .
+            .
+            .
+            x_n, P(x_n)
     """
+    coefficients = _generate_polynomial(secret, k)
+    evaluations = [(x, _evaluate_polynomial(coefficients, x)) for x in range(1, n + 1)]
+    return _get_evaluations_format(evaluations)
 
-    key = generate_key(password)
 
-    secret = sum(key) % 256 
-    shares = generate_shares(secret, n, t)
-    evaluations = {x: y for x, y in shares}
-    
-    # Encrypt the text (for simplicity, let's just return the text as bytes)
-    encrypted_content = text.encode('utf-8')
-    
-    return encrypted_content, evaluations
-
-def decrypt(encrypted_content: bytes, evaluations: dict[int, int]) -> str:
+def _generate_polynomial(secret, k):
     """
-    Decrypts the encrypted content using the provided evaluations.
+    Generates a polynomial of degree k-1 with the secret as the constant term.
 
     Args:
-        encrypted_content(bytes): The encrypted content to be decrypted.
-        evaluations(dict[int, int]): Points of the polynomial (x, P(x)).
+        secret (int): The secret to be shared.
+        k (int): The minimum number of shares needed to reconstruct the secret.
 
-    Return:
-        plaintext(str): The decrypted content as plaintext.
+    Returns:
+        list: List of polynomial coefficients.
     """
-    secret = _reconstruct_secret(list(evaluations.items()))
-    return f"Decrypted secret: {secret}"
+    coefficients = [secret] + [random.randint(1, 100) for _ in range(k - 1)]
+    return coefficients
+
+def _evaluate_polynomial(coefficients, x):
+    """
+    Evaluates the polynomial at a given point.
+
+    Args:
+        coefficients (list): List of polynomial coefficients.
+        x (int): The point at which the polynomial is evaluated.
+
+    Returns:
+        int: The value of the polynomial evaluated at x.
+    """
+    return sum(c * (x ** i) for i, c in enumerate(coefficients))
+
+def _get_evaluations_format(evaluations : List[int, int]) -> str:
+    pass
+
+def _get_evaluations(evaluations_format : str) -> List[int, int]:
+    pass
