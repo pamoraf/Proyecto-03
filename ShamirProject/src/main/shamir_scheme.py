@@ -6,7 +6,6 @@ import hashlib
 from typing import List, Tuple, Dict
 
 def _generate_key(password: str) -> bytes:
-    """Generates an AES key from the password using SHA-256."""
     return hashlib.sha256(password.encode()).digest()
 
 def _reconstruct_secret(evaluations: List[Tuple[int, int]]) -> int:
@@ -48,14 +47,11 @@ def encrypt(text: str, password: str, n: int, t: int) -> Tuple[bytes, Dict[int, 
             - encrypted_content (bytes): The encrypted content as a byte sequence.
             - evaluations (dict[int, int]): The evaluations of the polynomial.
     """
-    # Convert the text to an integer (secret)
     secret = int.from_bytes(text.encode(), 'big')
 
-    # Generate polynomial shares
     coefficients = generate_polynomial(secret, t)
     evaluations = {x: evaluate_polynomial(coefficients, x) for x in range(1, n + 1)}
 
-    # Encrypt the evaluations
     key = _generate_key(password)
     cipher = AES.new(key, AES.MODE_CBC)
     iv = cipher.iv
@@ -76,14 +72,11 @@ def decrypt(encrypted_content: bytes, evaluations: Dict[int, int], password: str
         str: The decrypted content as plaintext.
     """
     key = _generate_key(password)
-    iv = encrypted_content[:16]  # The first 16 bytes are the IV
+    iv = encrypted_content[:16]  
     cipher = AES.new(key, AES.MODE_CBC, iv)
 
-    # Decrypt the content
     decrypted_content = unpad(cipher.decrypt(encrypted_content[16:]), AES.block_size)
     
-    # Reconstruct the secret from evaluations
     secret = _reconstruct_secret(list(evaluations.items()))
     
-    # Convert the secret back to bytes and then to string
     return secret.to_bytes((secret.bit_length() + 7) // 8, 'big').decode()
