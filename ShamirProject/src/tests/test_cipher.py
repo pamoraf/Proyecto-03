@@ -27,6 +27,9 @@ def test_direct_decrypt():
     assert decrypted_content == text
 
 def test_common_text_encrypt():
+    """
+    Test that the encrypt function and decrypt in a real txt.
+    """
     text = read_text_file("src/tests/resources/text/common.txt")
     password = "securepassword"
     encrypted_content = encrypt(text, password)
