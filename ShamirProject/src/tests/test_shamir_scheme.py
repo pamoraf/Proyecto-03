@@ -21,23 +21,20 @@ POLYNOMIAL_POINST_WITH_KEYS = [
     (3, 2, 35)
 ]
 
-def get_subarrays(array, n):
+def get_subarrays(evaluations_format, n):
     """
-    Generate subarrays of length n from the given array.
+    Generate subarrays of length n from the given evaluations_format.
 
     Args:
-        array (list): The input array.
+        evaluations_format (str): The formatted evaluations string.
         n (int): The length of subarrays to generate.
 
     Returns:
-        list: A list of subarrays of length n.
+        str: A formatted string of subarrays of length n.
     """
-    if n > len(array):
-        return []
-    subarrays = []
-    for i in range(len(array) - n + 1):
-        subarrays.append(array[i: i + n])
-    return subarrays
+    evaluations = get_evaluations(evaluations_format)
+    sub_evaluations = evaluations[:n]
+    return get_evaluations_format(sub_evaluations)
 
 @pytest.mark.parametrize("total_evaluations, minimum_evaluations, key", [
     (0, 1, 35),
@@ -60,7 +57,7 @@ def test_generate_shares_invalid_evaluations(total_evaluations, minimum_evaluati
         key (int): The secret key.
     """
     with pytest.raises(ValueError):
-        generate_shares(total_evaluations, minimum_evaluations, key)
+        generate_shares(key, total_evaluations, minimum_evaluations)
 
 @pytest.mark.parametrize("total_evaluations, minimum_evaluations, key", POLYNOMIAL_POINST_WITH_KEYS)
 def test_generate_shares(total_evaluations, minimum_evaluations, key):
@@ -72,7 +69,7 @@ def test_generate_shares(total_evaluations, minimum_evaluations, key):
         minimum_evaluations (int): Minimum number of evaluations required to reconstruct the secret.
         key (int): The secret key.
     """
-    evaluations_format = generate_shares(total_evaluations, minimum_evaluations, key)
+    evaluations_format = generate_shares(key, total_evaluations, minimum_evaluations)
     evaluations = get_evaluations(evaluations_format)
     assert len(evaluations) == total_evaluations
     assert len(evaluations) == len(set(evaluations))
@@ -87,11 +84,12 @@ def test_reconstruct_secret(total_evaluations, minimum_evaluations, key):
         minimum_evaluations (int): Minimum number of evaluations required to reconstruct the secret.
         key (int): The secret key.
     """
-    evaluations_format = generate_shares(total_evaluations, minimum_evaluations, key)
+    evaluations_format = generate_shares(key, total_evaluations, minimum_evaluations)
     secret = reconstruct_secret(evaluations_format)
     assert secret == key
-    for i in range(minimum_evaluations + 1 , total_evaluations + 1):
-        secret = reconstruct_secret(get_subarrays(i))
+    for i in range(minimum_evaluations + 1, total_evaluations + 1):
+        subarray_format = get_subarrays(evaluations_format, i)
+        secret = reconstruct_secret(subarray_format)
         assert secret == key
 
 @pytest.mark.parametrize("evaluations_format, evaluations", [

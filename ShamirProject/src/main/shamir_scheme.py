@@ -1,8 +1,8 @@
 import random
-from typing import List
+from typing import List, Tuple
 from sympy import symbols
 
-def reconstruct_secret(evaluations_format : str) -> int:
+def reconstruct_secret(evaluations_format: str) -> int:
     """
     Reconstructs the secret from the polynomial evaluations.
 
@@ -23,7 +23,7 @@ def reconstruct_secret(evaluations_format : str) -> int:
     """
     x = symbols('x')
     evaluations = get_evaluations(evaluations_format)
-    secret = 0
+    secret_expr = 0 * x  
     k = len(evaluations)
     for j in range(k):
         x_j, y_j = evaluations[j]
@@ -32,8 +32,9 @@ def reconstruct_secret(evaluations_format : str) -> int:
             if m != j:
                 x_m, _ = evaluations[m]
                 L_j *= (x - x_m) / (x_j - x_m)
-        secret += y_j * L_j
-    return int(secret.subs(x, 0))
+        secret_expr += y_j * L_j
+    result = secret_expr.subs(x, 0)
+    return int(result)
 
 def generate_shares(secret, n, t):
     """
@@ -53,13 +54,14 @@ def generate_shares(secret, n, t):
             .
             x_n, P(x_n)
 
-    Raises;
-        ValueError: If t > n
+    Raises:
+        ValueError: If t > n or if n <= 0 or t <= 0.
     """
+    if t > n or n <= 0 or t <= 0:
+        raise ValueError("Invalid values for n and t. Ensure that n > 0, t > 0, and t <= n.")
     coefficients = _generate_polynomial(secret, t)
     evaluations = [(x, _evaluate_polynomial(coefficients, x)) for x in range(1, n + 1)]
     return get_evaluations_format(evaluations)
-
 
 def _generate_polynomial(secret, k):
     """
@@ -88,12 +90,12 @@ def _evaluate_polynomial(coefficients, x):
     """
     return sum(c * (x ** i) for i, c in enumerate(coefficients))
 
-def get_evaluations_format(evaluations : List[tuple[int, int]]) -> str:
+def get_evaluations_format(evaluations: List[Tuple[int, int]]) -> str:
     """
     Converts a list of (x, P(x)) tuples into a formatted string.
 
     Args:
-        evaluations (List[tuple[int, int]]): A list of tuples where each tuple contains two integers representing a point (x, P(x)).
+        evaluations (List[Tuple[int, int]]): A list of tuples where each tuple contains two integers representing a point (x, P(x)).
 
     Returns:
         str: A formatted string where each line contains the x and P(x) values separated by a comma.
@@ -108,7 +110,7 @@ def get_evaluations_format(evaluations : List[tuple[int, int]]) -> str:
         evaluations_format += f"\n{evaluation[0]}, {evaluation[1]}"
     return evaluations_format
 
-def get_evaluations(evaluations_format : str) -> List[tuple[int, int]]:
+def get_evaluations(evaluations_format: str) -> List[Tuple[int, int]]:
     """
     Parses a string containing evaluations in the format "x, P(x)" and returns a list of tuples.
 
@@ -118,14 +120,14 @@ def get_evaluations(evaluations_format : str) -> List[tuple[int, int]]:
                                     evaluations in the format "x, y" on each subsequent line.
 
     Returns:
-        List[tuple[int, int]]: A list of tuples where each tuple contains two integers (x, y).
+        List[Tuple[int, int]]: A list of tuples where each tuple contains two integers (x, y).
 
     Raises:
         ValueError: If the input string does not contain the header "x, P(x)".
         ValueError: If any line in the input string is not in the format "x, y".
     """
     if not "x, P(x)" in evaluations_format:
-        raise ValueError("Invalid fomart there is no header.")
+        raise ValueError("Invalid format: there is no header.")
     raw_evaluations = evaluations_format.replace("x, P(x)\n", "").split("\n")
     evaluations = list()
     for raw_evaluation in raw_evaluations:
