@@ -64,13 +64,3 @@ def write_text_file(file_path, data):
     """
     with open(file_path, 'w', encoding='utf-8') as file:
         file.write(data)
-
-def format_evaluations(evaluations: dict[int, int]) -> str:
-    """
-    """
-    pass
-
-def get_evaluations(format : str) -> dict[int, int]:
-    """
-    """
-    pass

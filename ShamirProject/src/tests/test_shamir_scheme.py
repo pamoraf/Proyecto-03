@@ -22,6 +22,16 @@ POLYNOMIAL_POINST_WITH_KEYS = [
 ]
 
 def get_subarrays(array, n):
+    """
+    Generate subarrays of length n from the given array.
+
+    Args:
+        array (list): The input array.
+        n (int): The length of subarrays to generate.
+
+    Returns:
+        list: A list of subarrays of length n.
+    """
     if n > len(array):
         return []
     subarrays = []
@@ -41,11 +51,27 @@ def get_subarrays(array, n):
     (0, -1, 35)
 ])
 def test_generate_shares_invalid_evaluations(total_evaluations, minimum_evaluations, key):
+    """
+    Test that generate_shares raises ValueError for invalid evaluation parameters.
+
+    Args:
+        total_evaluations (int): Total number of evaluations.
+        minimum_evaluations (int): Minimum number of evaluations required to reconstruct the secret.
+        key (int): The secret key.
+    """
     with pytest.raises(ValueError):
         generate_shares(total_evaluations, minimum_evaluations, key)
 
 @pytest.mark.parametrize("total_evaluations, minimum_evaluations, key", POLYNOMIAL_POINST_WITH_KEYS)
 def test_generate_shares(total_evaluations, minimum_evaluations, key):
+    """
+    Test that generate_shares produces the correct number of unique evaluations.
+
+    Args:
+        total_evaluations (int): Total number of evaluations.
+        minimum_evaluations (int): Minimum number of evaluations required to reconstruct the secret.
+        key (int): The secret key.
+    """
     evaluations_format = generate_shares(total_evaluations, minimum_evaluations, key)
     evaluations = get_evaluations(evaluations_format)
     assert len(evaluations) == total_evaluations
@@ -53,6 +79,14 @@ def test_generate_shares(total_evaluations, minimum_evaluations, key):
 
 @pytest.mark.parametrize("total_evaluations, minimum_evaluations, key", POLYNOMIAL_POINST_WITH_KEYS)
 def test_reconstruct_secret(total_evaluations, minimum_evaluations, key):
+    """
+    Test that reconstruct_secret correctly reconstructs the secret from evaluations.
+
+    Args:
+        total_evaluations (int): Total number of evaluations.
+        minimum_evaluations (int): Minimum number of evaluations required to reconstruct the secret.
+        key (int): The secret key.
+    """
     evaluations_format = generate_shares(total_evaluations, minimum_evaluations, key)
     secret = reconstruct_secret(evaluations_format)
     assert secret == key
@@ -66,6 +100,13 @@ def test_reconstruct_secret(total_evaluations, minimum_evaluations, key):
     ("x, P(x)\n11, 21\n43, 55\n-36, -33\n1000, 0", [(11, 21), (43, 55), (-36, -33), (1000, 0)]),
 ])
 def test_get_evaluation_format(evaluations_format, evaluations):
+    """
+    Test that get_evaluations_format converts evaluations to the correct format.
+
+    Args:
+        evaluations_format (str): The expected formatted string.
+        evaluations (list): The list of (x, P(x)) tuples.
+    """
     assert get_evaluations_format(evaluations) == evaluations_format
 
 @pytest.mark.parametrize("evaluations_format", [
@@ -77,6 +118,12 @@ def test_get_evaluation_format(evaluations_format, evaluations):
     "x, P(x)\n1.01, 20.0\n40.0, 50.6\n60.6, 70.0\n80.8, 80.0"
 ])
 def test_get_evaluation_format_invalid(evaluations_format):
+    """
+    Test that get_evaluations_format raises ValueError for invalid formats.
+
+    Args:
+        evaluations_format (str): The invalid formatted string.
+    """
     with pytest.raises(ValueError):
         get_evaluations_format(evaluations_format)
 
@@ -88,4 +135,11 @@ def test_get_evaluation_format_invalid(evaluations_format):
     ("x, P(x)\n10, 20\n40, 50\n60, 70\n80, 80", [(10, 20), (40, 50), (60, 70), (80, 80)]),
 ])
 def test_get_evaluations(evaluations_format, evaluations):
+    """
+    Test that get_evaluations correctly parses the formatted string into evaluations.
+
+    Args:
+        evaluations_format (str): The formatted string.
+        evaluations (list): The expected list of (x, P(x)) tuples.
+    """
     assert get_evaluations(evaluations_format) == evaluations

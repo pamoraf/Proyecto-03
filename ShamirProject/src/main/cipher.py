@@ -38,7 +38,7 @@ def decrypt(encrypted_content: bytes, key : int) -> str:
     secret = _reconstruct_secret(list(evaluations.items()))
     return f"Decrypted secret: {secret}"
 
-def _generate_key(input_string: str) -> bytes:
+def get_key(input_string: str) -> bytes:
     """
     Generates a SHA-256 key from the input string.
 
