@@ -3,19 +3,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 import os
-
-def generate_key(password: str) -> bytes:
-    """
-    Generates a key from the provided password using SHA-256.
-
-    Args:
-        password (str): The password used to generate the key.
-
-    Returns:
-        bytes: The generated key as a byte sequence.
-    """
-    return hashlib.sha256(password.encode()).digest()
-
+    
 def pad(data: bytes) -> bytes:
     """Pads the data to make it a multiple of the block size."""
     padding_length = 16 - len(data) % 16
@@ -38,19 +26,15 @@ def encrypt(text: str, password: str) -> bytes:
     Returns:
         bytes: The encrypted content as a byte sequence.
     """
-    key = generate_key(password)
+    key = get_key(password)
     iv = os.urandom(16)  
-
     cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
     encryptor = cipher.encryptor()
-
     padded_text = pad(text.encode('utf-8'))
-    
     encrypted_content = iv + encryptor.update(padded_text) + encryptor.finalize()
-    
     return encrypted_content
 
-def decrypt(encrypted_content: bytes, password: str) -> str:
+def decrypt(encrypted_content: bytes, key: int) -> str:
     """
     Decrypts the encrypted content using the provided password.
 
@@ -63,23 +47,14 @@ def decrypt(encrypted_content: bytes, password: str) -> str:
     """
     if not isinstance(encrypted_content, bytes):
         raise ValueError("El contenido cifrado debe ser de tipo bytes.")
-    
-    if not isinstance(password, str):
-        raise ValueError("La contraseña debe ser de tipo str.")
-
-    key = generate_key(password)
-
     iv = encrypted_content[:16]
     encrypted_text = encrypted_content[16:]
-
     cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
     decryptor = cipher.decryptor()
-
     padded_text = decryptor.update(encrypted_text) + decryptor.finalize()
-
     return unpad(padded_text).decode('utf-8')
 
-def get_key(input_string: str) -> int:
+def get_key(input_string: str) -> bytes:
     """
     Generates a SHA-256 key from the input string and converts it to an integer.
 
@@ -87,7 +62,6 @@ def get_key(input_string: str) -> int:
         input_string (str): The input string to generate a key from.
 
     Returns:
-        int: The SHA-256 hash of the input string converted to an integer.
+        bytes: The SHA-256 hash of the input string converted to an integer.
     """
-    sha256_hash = hashlib.sha256(input_string.encode()).digest()
-    return int.from_bytes(sha256_hash, 'big')  
+    return hashlib.sha256(input_string.encode()).digest()

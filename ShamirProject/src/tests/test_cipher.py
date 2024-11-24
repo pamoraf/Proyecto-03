@@ -61,7 +61,7 @@ def test_get_key(password):
         password (str): The password to generate the key for.
     """
     key = get_key(password)
-    assert isinstance(key, int)
+    assert isinstance(key, bytes)
     for alternative_password in PASSWORDS:
         if password != alternative_password:
             alternative_key = get_key(alternative_password)
