@@ -7,7 +7,6 @@ from io_manager import (
     read_text_file,
     write_binary_file,
     write_text_file,
-    format_evaluations,
 )
 
 def main():
