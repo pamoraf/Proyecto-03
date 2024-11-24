@@ -17,9 +17,12 @@ def reconstruct_secret(evaluations_format : str) -> int:
 
     Return:
         secret(int): The secret reconstructed from the evaluations.
+
+    Raises:
+        ValueError: If evaluations_format does not match the given format.
     """
     x = symbols('x')
-    evaluations = _get_evaluations(evaluations_format)
+    evaluations = get_evaluations(evaluations_format)
     secret = 0
     k = len(evaluations)
     for j in range(k):
@@ -49,10 +52,13 @@ def generate_shares(secret, n, t):
             .
             .
             x_n, P(x_n)
+
+    Raises;
+        ValueError: If t > n
     """
-    coefficients = _generate_polynomial(secret, k)
+    coefficients = _generate_polynomial(secret, t)
     evaluations = [(x, _evaluate_polynomial(coefficients, x)) for x in range(1, n + 1)]
-    return _get_evaluations_format(evaluations)
+    return get_evaluations_format(evaluations)
 
 
 def _generate_polynomial(secret, k):
@@ -82,8 +88,23 @@ def _evaluate_polynomial(coefficients, x):
     """
     return sum(c * (x ** i) for i, c in enumerate(coefficients))
 
-def _get_evaluations_format(evaluations : List[int, int]) -> str:
-    pass
+def get_evaluations_format(evaluations : List[tuple[int, int]]) -> str:
+    evaluations_format = "x, P(x)"
+    for evaluation in evaluations:
+        if len(evaluation) != 2:
+            raise ValueError("No 2 dimensional point")
+        evaluations_format += f"\n{evaluation[0]}, {evaluation[1]}"
+    return evaluations_format
 
-def _get_evaluations(evaluations_format : str) -> List[int, int]:
-    pass
+def get_evaluations(evaluations_format : str) -> List[tuple[int, int]]:
+    if not "x, P(x)" in evaluations_format:
+        raise ValueError("Invalid fomart there is no header.")
+    raw_evaluations = evaluations_format.replace("x, P(x)\n", "").split("\n")
+    evaluations = list()
+    for raw_evaluation in raw_evaluations:
+        try:
+            x, y = map(int, raw_evaluation.split(', '))
+            evaluations.append((x, y))
+        except ValueError:
+            raise ValueError(f"Invalid format: {raw_evaluation} is not in 'x, y' format")
+    return evaluations
