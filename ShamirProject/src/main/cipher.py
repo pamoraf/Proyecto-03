@@ -1,52 +1,95 @@
-#Aqui va lo del cifrado AES
 import hashlib
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+import os
 
-def encrypt(text: str, password : str) -> bytes:
+def generate_key(password: str) -> bytes:
+    """
+    Generates a key from the provided password using SHA-256.
+
+    Args:
+        password (str): The password used to generate the key.
+
+    Returns:
+        bytes: The generated key as a byte sequence.
+    """
+    # Generate a SHA-256 hash from the password
+    return hashlib.sha256(password.encode()).digest()
+
+def pad(data: bytes) -> bytes:
+    """Pads the data to make it a multiple of the block size."""
+    padding_length = 16 - len(data) % 16
+    padding = bytes([padding_length] * padding_length)
+    return data + padding
+
+def unpad(data: bytes) -> bytes:
+    """Removes padding from the data."""
+    padding_length = data[-1]
+    return data[:-padding_length]
+
+def encrypt(text: str, password: str) -> bytes:
     """
     Encrypts the plaintext using the provided password.
 
     Args:
-        text(str): The plaintext to be encrypted.
-        password(str): The password used to encrypt the text.
+        text (str): The plaintext to be encrypted.
+        password (str): The password used to encrypt the text.
         
-    Return:
-        encrypted_content(bytes): The encrypted content as a byte sequence.
+    Returns:
+        bytes: The encrypted content as a byte sequence.
     """
-
     key = generate_key(password)
+    iv = os.urandom(16)  # Generate a random initialization vector
 
-    secret = sum(key) % 256 
-    shares = generate_shares(secret, n, t)
-    evaluations = {x: y for x, y in shares}
+    # Create a Cipher object using AES in CBC mode
+    cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+    encryptor = cipher.encryptor()
+
+    # Pad the text to be a multiple of the block size (16 bytes for AES)
+    padded_text = pad(text.encode('utf-8'))
     
-    # Encrypt the text (for simplicity, let's just return the text as bytes) XD copigod
-    encrypted_content = text.encode('utf-8')
+    # Encrypt the padded text
+    encrypted_content = iv + encryptor.update(padded_text) + encryptor.finalize()
     
     return encrypted_content
 
-def decrypt(encrypted_content: bytes, key : int) -> str:
+def decrypt(encrypted_content: bytes, password: str) -> str:
     """
-    Decrypts the encrypted content using the provided evaluations.
+    Decrypts the encrypted content using the provided password.
 
     Args:
-        encrypted_content(bytes): The encrypted content to be decrypted.
-        key (int): The key to use 
+        encrypted_content (bytes): The encrypted content to be decrypted.
+        password (str): The password used to encrypt the text.
 
-    Return:
-        plaintext(str): The decrypted content as plaintext.
+    Returns:
+        str: The decrypted content as plaintext.
     """
-    secret = _reconstruct_secret(list(evaluations.items()))
-    return f"Decrypted secret: {secret}"
+    key = generate_key(password)
 
-def get_key(input_string: str) -> bytes:
+    # Extract the IV from the beginning of the encrypted content
+    iv = encrypted_content[:16]
+    encrypted_text = encrypted_content[16:]
+
+    # Create a Cipher object using AES in CBC mode
+    cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+    decryptor = cipher.decryptor()
+
+    # Decrypt the encrypted text
+    padded_text = decryptor.update(encrypted_text) + decryptor.finalize()
+
+    # Unpad the text
+    return unpad(padded_text).decode('utf-8')
+
+def get_key(input_string: str) -> int:
     """
-    Generates a SHA-256 key from the input string.
+    Generates a SHA-256 key from the input string and converts it to an integer.
 
     Args:
         input_string (str): The input string to generate a key from.
 
     Returns:
-        bytes: The SHA-256 hash of the input string as a byte sequence.
+        int: The SHA-256 hash of the input string converted to an integer.
     """
     sha256_hash = hashlib.sha256(input_string.encode()).digest()
-    return sha256_hash
+    return int.from_bytes(sha256_hash, 'big')  # Convertir a entero
