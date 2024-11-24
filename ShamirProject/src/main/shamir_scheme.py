@@ -89,19 +89,18 @@ def _evaluate_polynomial(coefficients, x):
     return sum(c * (x ** i) for i, c in enumerate(coefficients))
 
 def get_evaluations_format(evaluations : List[tuple[int, int]]) -> str:
-    def get_evaluations_format(evaluations: List[tuple[int, int]]) -> str:
-        """
-        Converts a list of (x, P(x)) tuples into a formatted string.
+    """
+    Converts a list of (x, P(x)) tuples into a formatted string.
 
-        Args:
-            evaluations (List[tuple[int, int]]): A list of tuples where each tuple contains two integers representing a point (x, P(x)).
+    Args:
+        evaluations (List[tuple[int, int]]): A list of tuples where each tuple contains two integers representing a point (x, P(x)).
 
-        Returns:
-            str: A formatted string where each line contains the x and P(x) values separated by a comma.
+    Returns:
+        str: A formatted string where each line contains the x and P(x) values separated by a comma.
 
-        Raises:
-            ValueError: If any tuple in the evaluations list does not contain exactly two elements.
-        """
+    Raises:
+        ValueError: If any tuple in the evaluations list does not contain exactly two elements.
+    """
     evaluations_format = "x, P(x)"
     for evaluation in evaluations:
         if len(evaluation) != 2:
@@ -110,22 +109,21 @@ def get_evaluations_format(evaluations : List[tuple[int, int]]) -> str:
     return evaluations_format
 
 def get_evaluations(evaluations_format : str) -> List[tuple[int, int]]:
-    def get_evaluations(evaluations_format: str) -> List[tuple[int, int]]:
-        """
-        Parses a string containing evaluations in the format "x, P(x)" and returns a list of tuples.
+    """
+    Parses a string containing evaluations in the format "x, P(x)" and returns a list of tuples.
 
-        Args:
-            evaluations_format (str): A string containing evaluations in the format "x, P(x)".
-                                      The first line should be "x, P(x)" as a header, followed by
-                                      evaluations in the format "x, y" on each subsequent line.
+    Args:
+        evaluations_format (str): A string containing evaluations in the format "x, P(x)".
+                                    The first line should be "x, P(x)" as a header, followed by
+                                    evaluations in the format "x, y" on each subsequent line.
 
-        Returns:
-            List[tuple[int, int]]: A list of tuples where each tuple contains two integers (x, y).
+    Returns:
+        List[tuple[int, int]]: A list of tuples where each tuple contains two integers (x, y).
 
-        Raises:
-            ValueError: If the input string does not contain the header "x, P(x)".
-            ValueError: If any line in the input string is not in the format "x, y".
-        """
+    Raises:
+        ValueError: If the input string does not contain the header "x, P(x)".
+        ValueError: If any line in the input string is not in the format "x, y".
+    """
     if not "x, P(x)" in evaluations_format:
         raise ValueError("Invalid fomart there is no header.")
     raw_evaluations = evaluations_format.replace("x, P(x)\n", "").split("\n")
