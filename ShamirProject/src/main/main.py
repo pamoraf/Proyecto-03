@@ -1,6 +1,7 @@
 import argparse
 import getpass
-from shamir_scheme import encrypt, decrypt, generate_shares, interpolate
+from shamir_scheme import generate_shares
+from cipher import encrypt, decrypt
 from io_manager import (
     read_binary_file,
     read_text_file,
