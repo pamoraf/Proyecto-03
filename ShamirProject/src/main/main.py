@@ -1,5 +1,6 @@
+import argparse
 import getpass
-from shamir_scheme import encrypt, decrypt, read_evaluations
+from shamir_scheme import encrypt, decrypt, generate_shares, interpolate
 from io_manager import (
     read_binary_file,
     read_text_file,
@@ -9,50 +10,57 @@ from io_manager import (
     get_evaluations
 )
 
-def display_menu():
-    """
-    Displays user input menu.
-    """
-    print("Bienvenido al Sistema de Compartición de Secretos de Shamir")
-    menu_active = True
-    while menu_active:
-        print("\nPor favor, elige una opción:")
-        print("(c) Cifrar un archivo")
-        print("(d) Descifrar un archivo")
-        print("(x) Regresar")
-        choice = input("Ingresa tu elección (c/d/x): ").strip()
-        if choice == 'c':
-            encrypt_file_menu()
-        elif choice == 'd':
-            decrypt_file_menu()
-        elif choice == 'x':
-            print("Saliendo del programa. ¡Hasta luego!")
-            menu_active = False
-        else:
-            print("Elección inválida, por favor intenta de nuevo.")
+def main():
+    parser = argparse.ArgumentParser(description="Shamir's Secret Sharing Scheme")
+    subparsers = parser.add_subparsers(dest='command', help='Sub-command help')
 
-def encrypt_file_menu():
-    print("\n--- Cifrar un Archivo ---")
-    evaluations_path = input("Ingresa el nombre del archivo para guardar las evaluaciones del polinomio: ")
-    n = int(input("Ingresa el número total de evaluaciones : "))
-    t = int(input("Ingresa el número mínimo de puntos necesarios para descifrar el archivo: "))
-    clear_file_path = input("Ingresa el nombre del archivo con el documento claro: ")
-    password = getpass.getpass("Ingresa la contraseña : ")
-    text = read_text_file(clear_file_path)
-    bytes, total_evaluations = encrypt(text, password, n, t)
-    encrypt_file_path = clear_file_path[:len(clear_file_path) - 4] + ".ecr"
-    write_binary_file(encrypt_file_path, bytes)
-    write_text_file(evaluations_path, format_evaluations(total_evaluations))
+    # Sub-parser for the encrypt command
+    encrypt_parser = subparsers.add_parser('c', help='Encrypt a file')
+    encrypt_parser.add_argument('eval_file', type=str, help='File to save the polynomial evaluations')
+    encrypt_parser.add_argument('n', type=int, help='Total number of evaluations (n > 2)')
+    encrypt_parser.add_argument('t', type=int, help='Minimum number of points needed to decrypt (1 < t ≤ n)')
+    encrypt_parser.add_argument('input_file', type=str, help='File with the clear document')
 
-def decrypt_file_menu():
-    print("\n--- Descifrar un Archivo ---")
-    polynomial_evaluations_file = input("Ingresa el nombre del archivo con las evaluaciones del polinomio: ")
-    encrypt_file_path = input("Ingresa el nombre del archivo cifrado: ")
-    polynomial_evaluations = read_text_file(polynomial_evaluations_file)
-    clear_file_path = encrypt_file_path[:len(encrypt_file_path) - 4] + ".txt"
-    encrypted_content = read_binary_file(encrypt_file_path)
-    text = decrypt(encrypted_content, get_evaluations(polynomial_evaluations))
-    write_text_file(clear_file_path, text)
+    # Sub-parser for the decrypt command
+    decrypt_parser = subparsers.add_parser('d', help='Decrypt a file')
+    decrypt_parser.add_argument('eval_file', type=str, help='File with at least t of the n polynomial evaluations')
+    decrypt_parser.add_argument('encrypted_file', type=str, help='File with the encrypted document')
+
+    args = parser.parse_args()
+
+    if args.command == 'c':
+        encrypt_file(args.eval_file, args.n, args.t, args.input_file)
+    elif args.command == 'd':
+        decrypt_file(args.eval_file, args.encrypted_file)
+    else:
+        parser.print_help()
+
+def encrypt_file(eval_file, n, t, input_file):
+    if n <= 2 or t <= 1 or t > n:
+        print("Invalid values for n and t. Ensure that n > 2 and 1 < t ≤ n.")
+        return
+
+    password = getpass.getpass("Enter password: ")
+    text = read_text_file(input_file)
+    encrypted_content = encrypt(text, password)
+    write_binary_file(input_file + ".enc", encrypted_content)
+
+    secret = int.from_bytes(encrypted_content, 'big')
+    shares = generate_shares(secret, n, t)
+    formatted_shares = format_evaluations(shares)
+    write_text_file(eval_file, formatted_shares)
+    print(f"File encrypted and saved as {input_file}.enc")
+    print(f"Polynomial evaluations saved in {eval_file}")
+
+def decrypt_file(eval_file, encrypted_file):
+    password = getpass.getpass("Enter password: ")
+    shares = get_evaluations(read_text_file(eval_file))
+    secret = interpolate(shares, len(shares))
+    encrypted_content = secret.to_bytes((secret.bit_length() + 7) // 8, 'big')
+    decrypted_content = decrypt(encrypted_content, password)
+    output_file = encrypted_file.replace(".enc", "")
+    write_text_file(output_file, decrypted_content)
+    print(f"File decrypted and saved as {output_file}")
 
 if __name__ == "__main__":
-    display_menu()
+    main()
