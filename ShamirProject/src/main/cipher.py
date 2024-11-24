@@ -14,7 +14,6 @@ def generate_key(password: str) -> bytes:
     Returns:
         bytes: The generated key as a byte sequence.
     """
-    # Generate a SHA-256 hash from the password
     return hashlib.sha256(password.encode()).digest()
 
 def pad(data: bytes) -> bytes:
@@ -40,16 +39,13 @@ def encrypt(text: str, password: str) -> bytes:
         bytes: The encrypted content as a byte sequence.
     """
     key = generate_key(password)
-    iv = os.urandom(16)  # Generate a random initialization vector
+    iv = os.urandom(16)  
 
-    # Create a Cipher object using AES in CBC mode
     cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
     encryptor = cipher.encryptor()
 
-    # Pad the text to be a multiple of the block size (16 bytes for AES)
     padded_text = pad(text.encode('utf-8'))
     
-    # Encrypt the padded text
     encrypted_content = iv + encryptor.update(padded_text) + encryptor.finalize()
     
     return encrypted_content
@@ -65,20 +61,22 @@ def decrypt(encrypted_content: bytes, password: str) -> str:
     Returns:
         str: The decrypted content as plaintext.
     """
+    if not isinstance(encrypted_content, bytes):
+        raise ValueError("El contenido cifrado debe ser de tipo bytes.")
+    
+    if not isinstance(password, str):
+        raise ValueError("La contraseña debe ser de tipo str.")
+
     key = generate_key(password)
 
-    # Extract the IV from the beginning of the encrypted content
     iv = encrypted_content[:16]
     encrypted_text = encrypted_content[16:]
 
-    # Create a Cipher object using AES in CBC mode
     cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
     decryptor = cipher.decryptor()
 
-    # Decrypt the encrypted text
     padded_text = decryptor.update(encrypted_text) + decryptor.finalize()
 
-    # Unpad the text
     return unpad(padded_text).decode('utf-8')
 
 def get_key(input_string: str) -> int:
@@ -92,4 +90,4 @@ def get_key(input_string: str) -> int:
         int: The SHA-256 hash of the input string converted to an integer.
     """
     sha256_hash = hashlib.sha256(input_string.encode()).digest()
-    return int.from_bytes(sha256_hash, 'big')  # Convertir a entero
+    return int.from_bytes(sha256_hash, 'big')  
