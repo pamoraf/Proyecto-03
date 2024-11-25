@@ -34,7 +34,7 @@ def encrypt(text: str, password: str) -> bytes:
     encrypted_content = iv + encryptor.update(padded_text) + encryptor.finalize()
     return encrypted_content
 
-def decrypt(encrypted_content: bytes, key: int) -> str:
+def decrypt(encrypted_content: bytes, key: bytes) -> str:
     """
     Decrypts the encrypted content using the provided password.
 
@@ -45,8 +45,6 @@ def decrypt(encrypted_content: bytes, key: int) -> str:
     Returns:
         str: The decrypted content as plaintext.
     """
-    if not isinstance(encrypted_content, bytes):
-        raise ValueError("El contenido cifrado debe ser de tipo bytes.")
     iv = encrypted_content[:16]
     encrypted_text = encrypted_content[16:]
     cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
