@@ -5,13 +5,31 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 import os
     
 def pad(data: bytes) -> bytes:
-    """Pads the data to make it a multiple of the block size."""
+    """
+    Pads the given data to make its length a multiple of the block size (16 bytes).
+
+    Args:
+        data (bytes): The input data to be padded.
+
+    Returns:
+        bytes: The padded data, with padding bytes appended to make the total length a multiple of 16.
+    """
     padding_length = 16 - len(data) % 16
     padding = bytes([padding_length] * padding_length)
     return data + padding
 
 def unpad(data: bytes) -> bytes:
-    """Removes padding from the data."""
+    """
+    Removes padding from the given data.
+
+    This function assumes that the padding is in the PKCS#7 format, where the value of each added byte is the number of bytes that are added. For example, if the padding length is 4, the last four bytes of the data will all have the value 4.
+
+    Args:
+        data (bytes): The padded data from which padding needs to be removed.
+
+    Returns:
+        bytes: The data with the padding removed.
+    """
     padding_length = data[-1]
     return data[:-padding_length]
 

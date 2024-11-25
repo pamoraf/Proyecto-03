@@ -1,5 +1,6 @@
 import argparse
 import getpass
+from typing import List
 from shamir_scheme import generate_shares, reconstruct_secret
 from cipher import encrypt, decrypt, get_key
 from io_manager import (
@@ -9,7 +10,7 @@ from io_manager import (
     write_text_file
 )
 
-def is_valid_file_type(file_path, valid_extensions):
+def is_valid_file_type(file_path : str, valid_extensions : List[str]):
     """Check if the file has a valid extension."""
     return any(file_path.endswith(ext) for ext in valid_extensions)
 

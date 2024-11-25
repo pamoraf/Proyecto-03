@@ -1,14 +1,12 @@
-import os
-
-def read_binary_file(file_path):
+def read_bytes_file(file_path : str):
     """
-    Reads a binary file and returns its content.
+    Reads byte content of a file.
     
     Args:
-        file_path (str): The path to the binary file.
+        file_path (str): The path of the file.
     
     Returns:
-        bytes: The content of the binary file.
+        bytes: The bytes content of the file.
     
     Raises:
         FileNotFoundError: If the file does not exist.
@@ -18,13 +16,13 @@ def read_binary_file(file_path):
         return file.read()
 
 
-def write_binary_file(file_path, data):
+def write_bytes_file(file_path : str, data : bytes):
     """
-    Writes binary data to a file.
+    Writes bytes data to a file.
     
     Args:
-        file_path (str): The path to the binary file.
-        data (bytes): The binary data to write.
+        file_path (str): The path of the file.
+        data (bytes): The byte data to write.
     
     Raises:
         FileNotFoundError: If the directory does not exist.
@@ -33,7 +31,7 @@ def write_binary_file(file_path, data):
     with open(file_path, 'wb') as file:
         file.write(data)
 
-def read_text_file(file_path):
+def read_text_file(file_path : str):
     """
     Reads a text file and returns its content.
     
@@ -50,7 +48,7 @@ def read_text_file(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
         return file.read()
 
-def write_text_file(file_path, data):
+def write_text_file(file_path : str, data : bytes):
     """
     Writes text data to a file.
     
