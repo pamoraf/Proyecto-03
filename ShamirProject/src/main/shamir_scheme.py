@@ -59,8 +59,9 @@ def generate_shares(secret, n, t):
     """
     if t > n or n <= 0 or t <= 0:
         raise ValueError("Invalid values for n and t. Ensure that n > 0, t > 0, and t <= n.")
+    spacing = 100000000000000000000
     coefficients = _generate_polynomial(secret, t)
-    evaluations = [(x, _evaluate_polynomial(coefficients, x)) for x in range(1, n + 1)]
+    evaluations = [(x, _evaluate_polynomial(coefficients, x * spacing)) for x in range(1, n + 1)]
     return get_evaluations_format(evaluations)
 
 def _generate_polynomial(secret, k):
