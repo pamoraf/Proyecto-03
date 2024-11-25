@@ -1,6 +1,7 @@
 import pytest
 import os
 import sys
+import math
 sys.path.append(os.path.abspath("./src/main"))
 from shamir_scheme import (
     reconstruct_secret, 
@@ -73,6 +74,47 @@ def test_generate_shares(total_evaluations, minimum_evaluations, key):
     evaluations = get_evaluations(evaluations_format)
     assert len(evaluations) == total_evaluations
     assert len(evaluations) == len(set(evaluations))
+
+@pytest.mark.parametrize("total_evaluations, minimum_evaluations, key", [
+    (5, 4, 1),
+    (10, 7, 43),
+    (90, 10, 76824),
+    (8, 4, 24),
+    (15, 11, 12345),
+    (27, 23, 67890),
+    (25, 10, 132),
+    (30, 22, 22),
+    (33, 30, 35133),
+    (46, 3, 0)
+])
+def test_shares_dispersion(total_evaluations, minimum_evaluations, key):
+    """
+    Test the dispersion of shares and check for patterns.
+
+    This test ensures that the spacing between the x-coordinates of the shares is not uniform
+    and checks for patterns in the x-coordinates and y-coordinates of the shares.
+
+    Args:
+        total_evaluations (int): The total number of shares to generate.
+        minimum_evaluations (int): The minimum number of shares required to reconstruct the key.
+        key (int): The secret key to be shared.
+    """
+    evaluations_format = generate_shares(key, total_evaluations, minimum_evaluations)
+    evaluations = get_evaluations(evaluations_format)
+    region = sorted([point[0] for point in evaluations])
+    spacing = abs(region[0] - region[1])
+    for i in range(1, len(region) - 1):
+        actual_space = abs(region[i] - region[i + 1])
+        assert not math.isclose(spacing, actual_space, abs_tol=10000)
+    image = sorted([point[1] for point in evaluations])
+    spacing = abs(image[0] - image[1])
+    for i in range(1, len(image) - 1):
+        actual_space = abs(image[i] - image[i + 1])
+        assert not math.isclose(spacing, actual_space, abs_tol=10000)
+    for i in range(2, len(region)):
+        assert not (region[i] - region[i-1] == region[i-1] - region[i-2])
+    for i in range(2, len(image)):
+        assert not (image[i] - image[i-1] == image[i-1] - image[i-2])
 
 @pytest.mark.parametrize("total_evaluations, minimum_evaluations, key", POLYNOMIAL_POINST_WITH_KEYS)
 def test_reconstruct_secret(total_evaluations, minimum_evaluations, key):

@@ -36,7 +36,7 @@ def reconstruct_secret(evaluations_format: str) -> int:
     result = secret_expr.subs(x, 0)
     return int(result)
 
-def generate_shares(secret, n, t):
+def generate_shares(secret : int, n : int, t: int):
     """
     Generates n shares of the secret using a polynomial of degree k-1.
 
