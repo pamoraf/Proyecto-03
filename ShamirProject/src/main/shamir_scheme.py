@@ -36,7 +36,7 @@ def reconstruct_secret(evaluations_format: str) -> int:
     result = secret_expr.subs(x, 0)
     return int(result)
 
-def generate_shares(secret : int, n : int, t: int):
+def generate_shares(secret: int, n: int, t: int, max_range: int = 10**10):
     """
     Generates n shares of the secret using a polynomial of degree k-1.
 
@@ -44,6 +44,7 @@ def generate_shares(secret : int, n : int, t: int):
         secret (int): The secret to be shared.
         n (int): The total number of shares to be generated.
         t (int): The minimum number of shares needed to reconstruct the secret.
+        max_range (int): The maximum range for generating unique x values.
 
     Returns:
         evaluations_format (str): Polynomial evaluations formatted:
@@ -59,9 +60,12 @@ def generate_shares(secret : int, n : int, t: int):
     """
     if t > n or n <= 0 or t <= 0:
         raise ValueError("Invalid values for n and t. Ensure that n > 0, t > 0, and t <= n.")
-    spacing = 100000000000000000000
+    
     coefficients = _generate_polynomial(secret, t)
-    evaluations = [(x, _evaluate_polynomial(coefficients, x * spacing)) for x in range(1, n + 1)]
+    
+    x_values = random.sample(range(1, max_range), n)
+    
+    evaluations = [(x, _evaluate_polynomial(coefficients, x)) for x in x_values]
     return get_evaluations_format(evaluations)
 
 def _generate_polynomial(secret, k):
