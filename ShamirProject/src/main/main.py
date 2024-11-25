@@ -4,9 +4,9 @@ from typing import List
 from shamir_scheme import generate_shares, reconstruct_secret
 from cipher import encrypt, decrypt, get_key
 from io_manager import (
-    read_binary_file,
+    read_bytes_file,
     read_text_file,
-    write_binary_file,
+    write_bytes_file,
     write_text_file
 )
 
@@ -62,7 +62,7 @@ def encrypt_file(eval_path : str, n : int, t : int, input_path : str):
         password = getpass.getpass("Enter password: ")
         text = read_text_file(input_path)
         encrypted_content = encrypt(text, password)
-        write_binary_file(input_path.replace(".txt", ".aes"), encrypted_content)
+        write_bytes_file(input_path.replace(".txt", ".aes"), encrypted_content)
         shares = generate_shares(int.from_bytes(get_key(password), 'big'), n, t)
         write_text_file(eval_path, shares)
         print(f"File encrypted and saved as: {input_path.replace(".txt", ".aes")}")
@@ -85,7 +85,7 @@ def decrypt_file(eval_path : str, encrypted_path : str):
     try:
         shares = read_text_file(eval_path)
         k = reconstruct_secret(shares)
-        encrypted_content = read_binary_file(encrypted_path)
+        encrypted_content = read_bytes_file(encrypted_path)
         decrypted_content = decrypt(encrypted_content, k.to_bytes((k.bit_length() + 7) // 8, 'big'))
         output_file = encrypted_path.replace(".aes", "_revealed.txt")
         write_text_file(output_file, decrypted_content)
