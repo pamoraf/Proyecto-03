@@ -60,11 +60,8 @@ def generate_shares(secret: int, n: int, t: int, max_range: int = 10**10):
     """
     if t > n or n <= 0 or t <= 0:
         raise ValueError("Invalid values for n and t. Ensure that n > 0, t > 0, and t <= n.")
-    
     coefficients = _generate_polynomial(secret, t)
-    
     x_values = random.sample(range(1, max_range), n)
-    
     evaluations = [(x, _evaluate_polynomial(coefficients, x)) for x in x_values]
     return get_evaluations_format(evaluations)
 
