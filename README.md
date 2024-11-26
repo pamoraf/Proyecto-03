@@ -24,7 +24,7 @@ Este proyecto implementa el esquema de secreto compartido de Shamir para ocultar
 2. Instalar Dependencias
 Asegúrate de tener un archivo requirements.txt en el directorio principal del proyecto. Instala las dependencias ejecutando:
    ```bash
-    pip install -r requirements.txt
+   pip install -r requirements.txt
 
 3.Ejecutar el Proyecto
 
@@ -40,7 +40,7 @@ Cifrar:
 
 Descifrar:
  ```bash
-   python3 src/main/main.py d <eval_file> <encrypted_file>
+ python3 src/main/main.py d <eval_file> <encrypted_file>
  ```
 - <eval_file>: Archivo con los fragmentos de las evaluaciones de la llave generada (extensión .frg).
 - <encrypted_file>: Archivo cifrado con el texto en bytes (extensión .aes).
@@ -48,15 +48,16 @@ Descifrar:
 Opciones de Ayuda
 
 Para obtener más información, ejecuta:
-
+ ```bash
 python3 src/main/main.py -h
+ ```
 
 Uso
 Ejemplo de Cifrado
 
 Si deseas cifrar un archivo mensaje.txt, generar 5 evaluaciones y requerir al menos 3 para descifrar:
  ```bash
-   python3 src/main/main.py c claves.frg 5 3 mensaje.txt
+ python3 src/main/main.py c claves.frg 5 3 mensaje.txt
  ```
 
 Esto generará:
@@ -69,7 +70,7 @@ Ejemplo de Descifrado
 Para recuperar el contenido original con al menos 3 fragmentos de claves.frg y el archivo cifrado mensaje.aes:
 
  ```bash
-   python3 src/main/main.py d claves.frg mensaje.aes
+ python3 src/main/main.py d claves.frg mensaje.aes
  ```
 
 El resultado se guardará en un archivo llamado mensaje_revealed.txt.
