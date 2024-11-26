@@ -59,8 +59,8 @@ Si deseas cifrar un archivo mensaje.txt, generar 5 evaluaciones y requerir al me
  ```bash
  python3 src/main/main.py c claves.frg 5 3 mensaje.txt
  ```
-
-Esto generará:
+Despues de haber puesto dicha instruccion se pedira una contrasena.
+Al final se generará:
 
  - Un archivo cifrado llamado mensaje.aes.
  - Un archivo de fragmentos llamado claves.frg.
