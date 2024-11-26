@@ -33,17 +33,17 @@ Cifrar:
    ```bash
    python3 src/main/main.py c <eval_file> <total_evaluations> <minimum_evaluations> <input_file>
    ```
-<eval_file>: Nombre del archivo donde se guardarán los fragmentos de las evaluaciones de la llave generada (extensión .frg).
-<total_evaluations>: Número total de evaluaciones (entero positivo mayor a 2).
-<minimum_evaluations>: Cantidad mínima de evaluaciones necesarias para descifrar el texto (entero positivo, 1 < t ≤ total_evaluations).
-<input_file>: Archivo de texto a ocultar (extensión .txt).
+- <eval_file>: Nombre del archivo donde se guardarán los fragmentos de las evaluaciones de la llave generada (extensión .frg).
+- <total_evaluations>: Número total de evaluaciones (entero positivo mayor a 2).
+- <minimum_evaluations>: Cantidad mínima de evaluaciones necesarias para descifrar el texto (entero positivo, 1 < t ≤ total_evaluations).
+- <input_file>: Archivo de texto a ocultar (extensión .txt).
 
 Descifrar:
  ```bash
    python3 src/main/main.py d <eval_file> <encrypted_file>
  ```
-<eval_file>: Archivo con los fragmentos de las evaluaciones de la llave generada (extensión .frg).
-<encrypted_file>: Archivo cifrado con el texto en bytes (extensión .aes).
+- <eval_file>: Archivo con los fragmentos de las evaluaciones de la llave generada (extensión .frg).
+- <encrypted_file>: Archivo cifrado con el texto en bytes (extensión .aes).
 
 Opciones de Ayuda
 
@@ -61,8 +61,8 @@ Si deseas cifrar un archivo mensaje.txt, generar 5 evaluaciones y requerir al me
 
 Esto generará:
 
- -Un archivo cifrado llamado mensaje.aes.
- -Un archivo de fragmentos llamado claves.frg.
+ - Un archivo cifrado llamado mensaje.aes.
+ - Un archivo de fragmentos llamado claves.frg.
 
 Ejemplo de Descifrado
 
