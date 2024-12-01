@@ -29,6 +29,7 @@ Asegúrate de tener un archivo requirements.txt en el directorio principal del p
 3.Ejecutar el Proyecto
 
 El programa se ejecuta desde la terminal. Puedes elegir entre cifrar o descifrar archivos de texto mediante los siguientes comandos:
+
 Cifrar:
    ```bash
    python3 src/main/main.py c <eval_file> <total_evaluations> <minimum_evaluations> <input_file>
